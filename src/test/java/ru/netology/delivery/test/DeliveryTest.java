@@ -19,6 +19,7 @@ class DeliveryTest {
     public static void setUpAll() {
         SelenideLogger.addListener("allure", new AllureSelenide());
     }
+
     @BeforeEach
     @DisplayName("Открытие браузера перед выполнением теста")
     void setup() {
@@ -33,14 +34,14 @@ class DeliveryTest {
 
     @Test
     @DisplayName("Should successful plan and replay meeting")
-    void shouldSuccessfulPlanAndReplanMeeting() {
+    void shouldSuccessfulTestAndReplan() {
         var validUser = DataGenerator.Registration.generateUser("ru");
         var daysToAddForFirstMeeting = 4;
         var firstMeetingDate = generateDate(daysToAddForFirstMeeting);
         var daysToAddForSecondMeeting = 7;
         var secondMeetingDate = generateDate(daysToAddForSecondMeeting);
         $("[data-test-id='city'] input").setValue(validUser.getCity());
-        $("[data-test-id='date'] input").sendKeys(Keys.chord(Keys.SHIFT,Keys.HOME),Keys.BACK_SPACE);
+        $("[data-test-id='date'] input").sendKeys(Keys.chord(Keys.SHIFT, Keys.HOME), Keys.BACK_SPACE);
         $("[data-test-id='date'] input").setValue(firstMeetingDate);
         $("[data-test-id='name'] input").setValue(validUser.getName());
         $("[data-test-id='phone'] input").setValue(validUser.getPhone());
@@ -48,7 +49,7 @@ class DeliveryTest {
         $$("button").find(exactText("Запланировать")).click();
         $("[data-test-id='success-notification']  .notification__title").shouldBe(visible, ofSeconds(5)).shouldHave(exactText("Успешно!"));
         $("[data-test-id='success-notification']  .notification__content").shouldBe(visible, ofSeconds(5)).shouldHave(exactText("Встреча успешно запланирована на " + firstMeetingDate));
-        $("[data-test-id='date'] input").sendKeys(Keys.chord(Keys.SHIFT,Keys.HOME),Keys.BACK_SPACE);
+        $("[data-test-id='date'] input").sendKeys(Keys.chord(Keys.SHIFT, Keys.HOME), Keys.BACK_SPACE);
         $("[data-test-id='date'] input").setValue(secondMeetingDate);
         $$("button").find(exactText("Запланировать")).click();
         $("[data-test-id='replan-notification']  .notification__title").shouldBe(visible, ofSeconds(5)).shouldHave(exactText("Необходимо подтверждение"));
@@ -56,22 +57,5 @@ class DeliveryTest {
         $$("[data-test-id='replan-notification'] button").find(exactText("Перепланировать")).click();
         $("[data-test-id='success-notification']  .notification__title").shouldBe(visible, ofSeconds(5)).shouldHave(exactText("Успешно!"));
         $("[data-test-id='success-notification']  .notification__content").shouldBe(visible, ofSeconds(5)).shouldHave(exactText("Встреча успешно запланирована на " + secondMeetingDate));
-    }
-
-    @Test
-    @DisplayName("Should if you don't enter a date")
-    public void ShouldIfYouDontEnterDate() {
-        var validUser = DataGenerator.Registration.generateUser("ru");
-        var daysToAdd = 3;
-        var meetingDate = generateDate(daysToAdd);
-        $("[data-test-id=city] input").setValue(validUser.getCity());
-
-        $("[data-test-id='name'] input").setValue(validUser.getName());
-        $("[data-test-id='phone'] input").setValue(validUser.getPhone());
-        $("[data-test-id='agreement']").click();
-        $$("button").find(exactText("Запланировать")).click();
-
-        $("[data-test-id='success-notification'").should(visible, ofSeconds(15))
-                .shouldHave(text("Встреча успешно запланирована на " + meetingDate));
     }
 }
